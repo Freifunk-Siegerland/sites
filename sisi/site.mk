@@ -21,27 +21,26 @@ GLUON_SITE_PACKAGES := \
         gluon-mesh-vpn-fastd \
         gluon-radvd \
         gluon-status-page \
-        iwinfo \
-        iptables \
-	haveged
+        iwinfo
 
 ##  DEFAULT_GLUON_RELEASE
 #   version string to use for images
 #   gluon relies on
 #     opkg compare-versions "$1" '>>' "$2"
 #   to decide if a version is newer or not.
-DEFAULT_GLUON_RELEASE := $(shell date '+%y.%m').2
+DEFAULT_GLUON_RELEASE := 0.6+exp$(shell date '+%y.%m')
 
 # Allow overriding the release number from the command line
-GLUON_RELEASE ?= $(DEFAULT_GLUON_RELEASE)
+GLUON_RELEASE ?= 22.01
 
 # Default priority for updates.
 GLUON_PRIORITY ?= 0
-
-GLUON_TARGET ?= ar71xx-generic
 
 # Region code required for some images; supported values: us eu
 GLUON_REGION ?= eu
 
 # Languages to include
-GLUON_LANGS ?= de
+GLUON_LANGS ?= en de
+
+# activate generation of ath10k-targets
+GLUON_ATH10K_MESH = ibss
