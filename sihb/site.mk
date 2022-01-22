@@ -30,7 +30,7 @@ GLUON_SITE_PACKAGES := \
 DEFAULT_GLUON_RELEASE := 0.6+exp$(shell date '+%y.%m')
 
 # Allow overriding the release number from the command line
-GLUON_RELEASE ?= 22.01
+GLUON_RELEASE ?= $(DEFAULT_GLUON_RELEASE)
 
 # Default priority for updates.
 GLUON_PRIORITY ?= 0
@@ -39,9 +39,4 @@ GLUON_PRIORITY ?= 0
 GLUON_REGION ?= eu
 
 # Languages to include
-GLUON_LANGS ?= de
-
-# activate generation of ath10k-targets
-GLUON_ATH10K_MESH ?= ibss
-
-GLUON_AUTOUPDATER_ENABLED ?= 1
+GLUON_LANGS ?= en de
