@@ -72,10 +72,10 @@ do
         #        mv outputs/$dir/sysupgrade outputs/$dir/sysupgrade.old
         #        mv outputs/$dir/factory outputs/$dir/factory.old
         #fi
-        #cp -av gluon/output/images/sysupgrade outputs/$dir/sysupgrade
-        #cp -av gluon/output/images/factory outputs/$dir/factory
-	rsync -avzP gluon/output/images/sysupgrade outputs/$dir/sysupgrade
-	rsync -avzP gluon/output/images/factory outputs/$dir/factory
+        #cp -av gluon/output/images/sysupgrade/ outputs/$dir/sysupgrade/
+        #cp -av gluon/output/images/factory/ outputs/$dir/factory/
+	rsync -avzP gluon/output/images/sysupgrade/ outputs/$dir/sysupgrade/
+	rsync -avzP gluon/output/images/factory/ outputs/$dir/factory/
 
 done
 
