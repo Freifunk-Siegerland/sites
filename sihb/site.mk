@@ -21,7 +21,7 @@ GLUON_SITE_PACKAGES := \
 	gluon-status-page \
 	haveged \
 	iwinfo
-	
+
 ##  DEFAULT_GLUON_RELEASE
 #   version string to use for images
 #   gluon relies on
@@ -39,9 +39,9 @@ GLUON_PRIORITY ?= 0
 GLUON_REGION ?= eu
 
 # Languages to include
-GLUON_LANGS ?= en de
+GLUON_LANGS ?= de
 
 # activate generation of ath10k-targets
-GLUON_ATH10K_MESH = ibss
+GLUON_ATH10K_MESH ?= ibss
 
-GLUON_AUTOUPDATER_ENABLED = 1
+GLUON_AUTOUPDATER_ENABLED ?= 1
