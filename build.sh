@@ -30,7 +30,7 @@ do
         fi
         rm -r gluon/site/*
         rm -r gluon/output/images/*
-        cp -r sites/$dir/* gluon/site
+        rsync -avzP sites/$dir/* gluon/site/
 
         cd gluon
 
