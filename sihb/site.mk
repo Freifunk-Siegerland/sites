@@ -44,3 +44,4 @@ GLUON_LANGS ?= de
 # activate generation of ath10k-targets
 GLUON_ATH10K_MESH ?= ibss
 
+GLUON_AUTOUPDATER_ENABLED ?= 1
