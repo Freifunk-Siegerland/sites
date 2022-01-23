@@ -1,19 +1,22 @@
 #!/bin/bash
 
-#Ordneraufbau
+#Ordneraufbau Beispiel
 #~/bauen/sites/     #FF git und build.sh pfad
 #~/bauen/gluon/     #gluon git
 #~/bauen/outputs/   #image output
 
 #GLUON_RELEASE anpassen!
+#GLUON_BRANCH auswählen!
 #script aufrufen mit den sites: ./build.sh sihb sisi sifb
 
 # Warn of uninitialized variables
 set -u
 
-export GLUON_RELEASE=22.01
+export GLUON_RELEASE=22.01.2
 export GLUON_ATH10K_MESH=ibss
-export GLUON_BRANCH=stable
+#export GLUON_BRANCH=stable
+#export GLUON_BRANCH=beta
+export GLUON_BRANCH=experimental
 
 NUM_CORES_PLUS_ONE=$(expr $(nproc) + 1)
 
