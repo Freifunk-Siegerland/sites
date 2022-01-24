@@ -70,11 +70,11 @@ do
         cd ..
 
         echo "----- signing manifest -----"
-        gluon/contrib/sign.sh fakesecret gluon/output/images/sysupgrade/stable.manifest
+        gluon/contrib/sign.sh fakesecret gluon/output/images/sysupgrade/$GLUON_BRANCH.manifest
 
         echo "----- copying images -----"
 
-	#mit  backup (nicht angepasst nur Beispiel)
+	#mit  backup (alt)
 	#if ! [ -d outputs/$dir ]; then
         #        mkdir -p outputs/$dir
         #else
@@ -91,9 +91,9 @@ do
         #cp -av gluon/output/images/factory/ outputs/$dir/factory/
 
 	#ohne backup
-	mkdir -p outputs/$dir/sysupgrade/
-	rsync -av gluon/output/images/sysupgrade/* outputs/$dir/sysupgrade/
-	mkdir -p outputs/$dir/factory/
-	rsync -av gluon/output/images/factory/* outputs/$dir/factory/
+	mkdir -p outputs/$dir/$GLUON_BRANCH/sysupgrade/
+	rsync -av gluon/output/images/sysupgrade/* outputs/$dir/$GLUON_BRANCH/sysupgrade/
+	mkdir -p outputs/$dir/$GLUON_BRANCH/factory/
+	rsync -av gluon/output/images/factory/* outputs/$dir/$GLUON_BRANCH/factory/
 
 done
