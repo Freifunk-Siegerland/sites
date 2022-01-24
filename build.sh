@@ -33,7 +33,7 @@ do
         fi
         rm -r gluon/site/*
         rm -r gluon/output/*
-        rsync -avzP sites/$dir/* gluon/site/
+        rsync -av sites/$dir/* gluon/site/
 
         cd gluon
 
@@ -73,7 +73,9 @@ do
         gluon/contrib/sign.sh fakesecret gluon/output/images/sysupgrade/stable.manifest
 
         echo "----- copying images -----"
-        #if ! [ -d outputs/$dir ]; then
+
+	#mit  backup (nicht angepasst nur Beispiel)
+	#if ! [ -d outputs/$dir ]; then
         #        mkdir -p outputs/$dir
         #else
         #        if [ -d outputs/$dir/sysupgrade.old ]; then
@@ -87,10 +89,11 @@ do
         #fi
         #cp -av gluon/output/images/sysupgrade/ outputs/$dir/sysupgrade/
         #cp -av gluon/output/images/factory/ outputs/$dir/factory/
+
+	#ohne backup
 	mkdir -p outputs/$dir/sysupgrade/
-	rsync -avzP gluon/output/images/sysupgrade/* outputs/$dir/sysupgrade/
+	rsync -av gluon/output/images/sysupgrade/* outputs/$dir/sysupgrade/
 	mkdir -p outputs/$dir/factory/
-	rsync -avzP gluon/output/images/factory/* outputs/$dir/factory/
+	rsync -av gluon/output/images/factory/* outputs/$dir/factory/
 
 done
-
