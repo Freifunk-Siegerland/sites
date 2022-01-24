@@ -96,4 +96,6 @@ do
 	mkdir -p outputs/$dir/$GLUON_BRANCH/factory/
 	rsync -av gluon/output/images/factory/* outputs/$dir/$GLUON_BRANCH/factory/
 
+	rsync -av sites/.htaccess  outputs/$dir/$GLUON_BRANCH/sysupgrade/
+
 done
