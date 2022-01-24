@@ -32,7 +32,7 @@ do
                 break;
         fi
         rm -r gluon/site/*
-        rm -r gluon/output/images/*
+        rm -r gluon/output/*
         rsync -avzP sites/$dir/* gluon/site/
 
         cd gluon
@@ -87,7 +87,9 @@ do
         #fi
         #cp -av gluon/output/images/sysupgrade/ outputs/$dir/sysupgrade/
         #cp -av gluon/output/images/factory/ outputs/$dir/factory/
+	mkdir -p outputs/$dir/sysupgrade/
 	rsync -avzP gluon/output/images/sysupgrade/* outputs/$dir/sysupgrade/
+	mkdir -p outputs/$dir/factory/
 	rsync -avzP gluon/output/images/factory/* outputs/$dir/factory/
 
 done
