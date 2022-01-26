@@ -12,7 +12,7 @@
 # Warn of uninitialized variables
 set -u
 
-export GLUON_RELEASE=22.01
+export GLUON_RELEASE=22.01.2
 export GLUON_ATH10K_MESH=ibss
 export GLUON_BRANCH=stable
 #export GLUON_BRANCH=beta
@@ -97,5 +97,11 @@ do
 	rsync -av gluon/output/images/factory/* outputs/$dir/$GLUON_BRANCH/factory/
 
 	rsync -av sites/.htaccess  outputs/$dir/$GLUON_BRANCH/sysupgrade/
+
+	#site copieren
+	mkdir -p outputs/$dir/$GLUON_BRANCH/site
+	rsync -av gluon/site/* outputs/$dir/$GLUON_BRANCH/site/
+	#build.sh copy
+        rsync -av /sites/build.sh outputs/$dir/$GLUON_BRANCH/build.sh-copy
 
 done
