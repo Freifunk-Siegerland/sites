@@ -99,9 +99,9 @@ do
 	rsync -av sites/.htaccess  outputs/$dir/$GLUON_BRANCH/sysupgrade/
 
 	#site copieren
-	mkdir -p outputs/$dir/$GLUON_BRANCH/site
-	rsync -av gluon/site/* outputs/$dir/$GLUON_BRANCH/site/
+	mkdir -p outputs/$dir/$GLUON_BRANCH/.site
+	rsync -av gluon/site/* outputs/$dir/$GLUON_BRANCH/.site/
 	#build.sh copy
-        rsync -av /sites/build.sh outputs/$dir/$GLUON_BRANCH/build.sh-copy
+        rsync -av sites/build.sh outputs/$dir/$GLUON_BRANCH/.build.sh-copy
 
 done
