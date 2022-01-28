@@ -1,9 +1,10 @@
 #!/bin/bash
 
 #Ordneraufbau Beispiel
-#~/bauen/sites/     #FF git und build.sh pfad
-#~/bauen/gluon/     #gluon git
-#~/bauen/outputs/   #image output
+#~/bauen/sites/     	#site git
+#~/bauen/gluon/     	#gluon git
+#~/bauen/outputs/   	#image output
+#~/bauen/fakesecret	#secret file
 
 #GLUON_RELEASE anpassen!
 #GLUON_BRANCH auswählen!
@@ -12,7 +13,7 @@
 # Warn of uninitialized variables
 set -u
 
-export GLUON_RELEASE=22.01.2
+export GLUON_RELEASE=22.01.3
 export GLUON_ATH10K_MESH=ibss
 export GLUON_BRANCH=stable
 #export GLUON_BRANCH=beta
@@ -102,6 +103,10 @@ do
 	mkdir -p outputs/$dir/$GLUON_BRANCH/.site
 	rsync -av gluon/site/* outputs/$dir/$GLUON_BRANCH/.site/
 	#build.sh copy
-        rsync -av sites/build.sh outputs/$dir/$GLUON_BRANCH/.build.sh-copy
+	rsync -av sites/build.sh outputs/$dir/$GLUON_BRANCH/.build.sh-copy
+	#sites HEAD copy
+        rsync -av sites/.git/HEAD  outputs/$dir/$GLUON_BRANCH/.sitesHEAD
+	#gluon HEAD copy
+        rsync -av gluon/.git/HEAD  outputs/$dir/$GLUON_BRANCH/.gluonHEAD
 
 done
