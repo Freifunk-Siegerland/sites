@@ -5,28 +5,27 @@ set -u
 #exit on error
 set -e
 
-
-if [ $# -eq 0 ]; then
-	echo "Please run this script with the following Arguments:"
-        echo "./build.sh $1 $2 $3 $4 $n"
-        echo "$1: GLUON_BRANCH s=stable, b=beta, e=experimental"
-        echo "$2: GLUON_RELEASE in format XX.XX(.??)"
-        echo "$3: gluon clone version 'v20XX.?X.?X', example v2017.1.8"
-	echo "$4+$n: site XXXX, example 'sihb'"
-	exit 1;
-fi
-
 #allready in site.mk
 #export GLUON_ATH10K_MESH=ibss
 
 #CPU cores
 NUM_CORES_PLUS_ONE=$(expr $(nproc) + 1)
 
+if [ $# -eq 0 ]; then
+	echo "Please run this script with the following Arguments:"
+        echo "./build.sh <1> <2> <3> <4> <n>"
+        echo "1: GLUON_BRANCH s=stable, b=beta, e=experimental"
+        echo "2: GLUON_RELEASE in format XX.XX(.??)"
+        echo "3: gluon clone version 'v20XX.?X.?X', example v2017.1.8"
+	echo "4-n: site XXXX, example 'sihb'"
+	exit 1;
+fi
+
 case "${1}" in
 	"")	echo "!!!!! No GLUON_BRANCH option was specified. !!!!!"; 	exit 1 ;;
-	s)	echo "----- GLUON_BRANCH=stable -----"; 			export GLUON_BRANCH=stable ;;
-	b)	echo "----- GLUON_BRANCH=beta -----"; 				export GLUON_BRANCH=beta ;;
-	e)	echo "----- GLUON_BRANCH=experimental -----"; 			export GLUON_BRANCH=stable ;;
+	s)	echo "----- GLUON_BRANCH = stable -----"; 			export GLUON_BRANCH=stable ;;
+	b)	echo "----- GLUON_BRANCH = beta -----"; 			export GLUON_BRANCH=beta ;;
+	e)	echo "----- GLUON_BRANCH = experimental -----"; 		export GLUON_BRANCH=stable ;;
 	*)	echo "!!!!! Unknown GLUON_BRANCH !!!!!"; 			exit 1 ;;
 esac
 
@@ -39,19 +38,22 @@ else
         exit 1;
 fi
 
-if ! [[ $3 == v20[0-9][0-9].+([0-9]).+([0-9]) ]]; then
-        echo "!!!!! gluon clone version 'v20XX.?X.?X', example v2017.1.8 !!!!!"
+if [[ $3 == v20[0-9][0-9].+([0-9]).+([0-9]) ]]; then
+	echo "----- GLUON_VERSION "$3" -----"
+else
+        echo "!!!!! GLUON_VERSION format 'v20XX.?X.?X', example v2017.1.8 !!!!!"
         exit 1;
 fi
 
-exit 1;
 
 #check sites exist
 for dir in "${@:4}"
 do
-	if ! [ -d $dir ]; then
+	if [ -d $dir ]; then
+		echo "----- will build for "$dir" -----"
+	else
 		echo "!!!!! $dir site not found !!!!!"
-		exit 1;
+                exit 1;
 	fi
 done
 
@@ -59,35 +61,63 @@ done
 cd ../"$(dirname "$0")"
 
 #check for Secretkey
-if ! [ -f ../garnix ]; then
-	echo "----- Pleas type in ur Signingkey, will write to file '../garnix' -----"
-	read -p 'Secretkey: ' > ../garnix
+if [[ -f lekey ]]; then
+	echo "----- Signingkey exists -----"
+        read LESECRETKEY < lekey
+
+else
+       echo "----- Pleas type in ur manifest signingkey or leave blank for not signing -----"
+       read -p 'Secretkey: ' LESECRETKEY
+        if [ "$LESECRETKEY" = "" ]; then
+                echo "----- will not sign Manifest -----"
+        else
+                while true; do
+                        read -p "Do you wish to save this Key in a file for later [y/n]? " -n 1 -r
+                        echo    # (optional) move to a new line
+                        if [[ $REPLY =~ ^[Yy]$ ]]; then
+                                echo "$LESECRETKEY" > lekey
+                                echo "Key saved in file '../lekey'"
+                                break
+                        else
+                                echo "Key not saved in file"
+                                break
+                        fi
+                done
+
+
+        fi
 fi
 
 
-for dir in "${@:3}"
-do
-	#check and create branch folder
-	[[ ! -d outputs/$dir/$GLUON_BRANCH ]] && mkdir -p outputs/$dir/$GLUON_BRANCH/
 
+for dir in "${@:4}"
+do
 	#start log
 	BASHLOGPATH=outputs/$dir/$GLUON_BRANCH/.build.sh.log
 	echo "----- START log to "$BASHLOGPATH" -----"
 	(
 
+	#check and create site folder
+        [[ ! -d gluon/site ]] && mkdir -p gluon/site
 	#clean folders
 	[[ -f gluon/site/site.conf ]] && rm -r gluon/site/*
 	[[ -d gluon/output/images ]] && rm -r gluon/output/*
 
+	#check and create branch folder
+        [[ ! -d outputs/$dir/$GLUON_BRANCH ]] && mkdir -p outputs/$dir/$GLUON_BRANCH/
+
+
+	git clone https://github.com/freifunk-gluon/gluon.git ../gluon -b $3
 	#copy site
 	rsync -av sites/$dir/ gluon/site
 
 	cd gluon
-	[[ ! git checkout $3 ]] && exit 1;
+        echo "----- checkout "$3" -----"
+	git checkout $3
 	echo "----- make update -----"
 	make update
 	#echo "----- cleaning ar71xx-generic -----"
-	make clean GLUON_TARGET=ar71xx-generic
+	#make clean GLUON_TARGET=ar71xx-generic
         #echo "----- building ar71xx-generic for "$dir" -----"
         #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-generic
         #echo "----- cleaning ar71xx-tiny -----"
@@ -117,8 +147,12 @@ do
         #zu Bauen Pfad springen
         cd ..
 
-        echo "----- signing manifest -----"
-        gluon/contrib/sign.sh garnix gluon/output/images/sysupgrade/$GLUON_BRANCH.manifest
+	if ! [ "$LESECRETKEY" = "" ]; then
+        	echo "----- signing manifest -----"
+	        gluon/contrib/sign.sh lekey gluon/output/images/sysupgrade/$GLUON_BRANCH.manifest
+	else
+		echo "----- NOT signing manifest -----"
+	fi
 
         echo "----- copying images and info -----"
 
