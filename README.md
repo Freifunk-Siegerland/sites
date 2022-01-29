@@ -8,8 +8,6 @@ Die Kürzel der Städte sind im [Freifunk-Wiki](http://wiki.freifunk.net/Namensk
 ## build.sh anleitung
 mkdir bauen<br />
 cd bauen<br />
-#in folgende Datei secret eintragen:<br />
-nano garnix<br />
 git clone https://github.com/freifunk-gluon/gluon.git gluon -b v2017.1.8<br />
 git clone https://github.com/Freifunk-Siegerland/sites.git -b v2017.1.8<br />
 cd sites<br />
