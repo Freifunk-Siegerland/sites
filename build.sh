@@ -5,6 +5,17 @@ set -u
 #exit on error
 set -e
 
+
+if [ $# -eq 0 ]; then
+	echo "Please run this script with the following Arguments:"
+        echo "./build.sh $1 $2 $3 $4 $n"
+        echo "$1: GLUON_BRANCH s=stable, b=beta, e=experimental"
+        echo "$2: GLUON_RELEASE in format XX.XX(.??)"
+        echo "$3: gluon clone version 'v20XX.?X.?X', example v2017.1.8"
+	echo "$4+$n: site XXXX, example 'sihb'"
+	exit 1;
+fi
+
 #allready in site.mk
 #export GLUON_ATH10K_MESH=ibss
 
@@ -28,8 +39,15 @@ else
         exit 1;
 fi
 
+if ! [[ $3 == v20[0-9][0-9].+([0-9]).+([0-9]) ]]; then
+        echo "!!!!! gluon clone version 'v20XX.?X.?X', example v2017.1.8 !!!!!"
+        exit 1;
+fi
+
+exit 1;
+
 #check sites exist
-for dir in "${@:3}"
+for dir in "${@:4}"
 do
 	if ! [ -d $dir ]; then
 		echo "!!!!! $dir site not found !!!!!"
@@ -39,6 +57,13 @@ done
 
 #zu Bauen Pfad springen
 cd ../"$(dirname "$0")"
+
+#check for Secretkey
+if ! [ -f ../garnix ]; then
+	echo "----- Pleas type in ur Signingkey, will write to file '../garnix' -----"
+	read -p 'Secretkey: ' > ../garnix
+fi
+
 
 for dir in "${@:3}"
 do
@@ -58,17 +83,17 @@ do
 	rsync -av sites/$dir/ gluon/site
 
 	cd gluon
-
+	[[ ! git checkout $3 ]] && exit 1;
 	echo "----- make update -----"
 	make update
-        echo "----- cleaning ar71xx-generic -----"
+	#echo "----- cleaning ar71xx-generic -----"
 	make clean GLUON_TARGET=ar71xx-generic
-        echo "----- building ar71xx-generic for "$dir" -----"
-        make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-generic
-        echo "----- cleaning ar71xx-tiny -----"
-        make clean GLUON_TARGET=ar71xx-tiny
-        echo "----- building ar71xx-tiny for "$dir" -----"
-        make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-tiny
+        #echo "----- building ar71xx-generic for "$dir" -----"
+        #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-generic
+        #echo "----- cleaning ar71xx-tiny -----"
+        #make clean GLUON_TARGET=ar71xx-tiny
+	#echo "----- building ar71xx-tiny for "$dir" -----"
+	#make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-tiny
         #echo "----- cleaning ar71xx-nand -----"
         #make clean GLUON_TARGET=ar71xx-nand
         #echo "----- building ar71xx-nand for "$dir" -----"
