@@ -173,7 +173,7 @@ do
 
 	if ! [ "$LESECRETKEY" = "" ]; then
   	echo "----- signing manifest -----"
-		gluon/contrib/sign.sh lekey gluon/output/images/sysupgrade/$1.manifest
+		gluon/contrib/sign.sh $LESECRETKEY gluon/output/images/sysupgrade/$1.manifest
 	else
 		echo "----- NOT signing manifest -----"
 	fi
