@@ -32,8 +32,7 @@ esac
 
 #GLUON_RELEASE format check
 if [[ $2 == [0-9][0-9].[0-9][0-9].+([0-9]) ]] || [[ $2 == [0-9][0-9].[0-9][0-9] ]]; then
-  export GLUON_RELEASE=$2
-  echo "----- GLUON_RELEASE "$GLUON_RELEASE" -----"
+  echo "----- GLUON_RELEASE "$2" -----"
 else
   echo "!!!!! GLUON_RELEASE not format XX.XX(.??) !!!!!"
   exit 1;
@@ -130,12 +129,12 @@ do
 	[[ ! -d outputs/$dir/$1 ]] && mkdir -p outputs/$dir/$1
 
 	#start log
-	BASHLOGPATH = outputs/$dir/$1/.build.sh.log
+	BASHLOGPATH="outputs/$dir/$1/.build.sh.log"
 	echo "----- START log to "$BASHLOGPATH" -----"
 	(
 
 	echo "----- copy site "$dir" -----"
-	rsync -av sites/$dir/ gluon/site
+	cp -r sites/$dir/* gluon/site
 
 	cd gluon
 
@@ -144,37 +143,37 @@ do
 	echo "----- cleaning ar71xx-generic -----"
 	make clean GLUON_TARGET=ar71xx-generic
   echo "----- building ar71xx-generic for "$dir" -----"
-  make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-generic GLUON_BRANCH=$1
+  make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-generic GLUON_BRANCH=$1 GLUON_RELEASE=$2
   echo "----- cleaning ar71xx-tiny -----"
   make clean GLUON_TARGET=ar71xx-tiny
 	echo "----- building ar71xx-tiny for "$dir" -----"
-	make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-tiny GLUON_BRANCH=$1
+	make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-tiny GLUON_BRANCH=$1 GLUON_RELEASE=$2
   #echo "----- cleaning ar71xx-nand -----"
   #make clean GLUON_TARGET=ar71xx-nand
   #echo "----- building ar71xx-nand for "$dir" -----"
-  #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-nand GLUON_BRANCH=$1
+  #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-nand GLUON_BRANCH=$1 GLUON_RELEASE=$2
   #echo "----- cleaning ramips-mt7621 -----"
   #make clean GLUON_TARGET=ramips-mt7621
   #echo "----- building ramips-mt7621 for "$dir" -----"
-  #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ramips-mt7621 GLUON_BRANCH=$1
+  #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ramips-mt7621 GLUON_BRANCH=$1 GLUON_RELEASE=$2
   #echo "----- cleaning mpc85xx-generic -----"
   #make clean GLUON_TARGET=mpc85xx-generic
   #echo "----- building mpc85xx-generic for "$dir" -----"1
-  #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=mpc85xx-generic GLUON_BRANCH=$1
+  #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=mpc85xx-generic GLUON_BRANCH=$1 GLUON_RELEASE=$2
   #echo "----- cleaning ipq40xx -----"
   #make clean GLUON_TARGET=ipq40xx
   #echo "----- building ipq40xx for "$dir" -----"
-  #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ipq40xx GLUON_BRANCH=$1
+  #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ipq40xx GLUON_BRANCH=$1 GLUON_RELEASE=$2
 
   echo "----- generating manifest -----"
-	make manifest
+#	make manifest
 
   #zu Bauen Pfad springen
   cd ..
 
 	if ! [ "$LESECRETKEY" = "" ]; then
   	echo "----- signing manifest -----"
-		gluon/contrib/sign.sh lekey gluon/output/images/sysupgrade/$1.manifest
+#		gluon/contrib/sign.sh lekey gluon/output/images/sysupgrade/$1.manifest
 	else
 		echo "----- NOT signing manifest -----"
 	fi
@@ -205,10 +204,10 @@ do
 	cp -r sites/.htaccess  outputs/$dir/"$1"/sysupgrade/
 
 	#copy logs and infos
-	cp -r gluon/site/ outputs/$dir/"$1"/.site
-	cp -r sites/build.sh outputs/$dir/$1 build.sh
-  echo "$GLUON_VERSION" > outputs/$dir/$1/.GLUON_VERSION
-	echo "$GLUON_RELEASE" > outputs/$dir/$1/.GLUON_RELEASE
+	cp -r gluon/site/* "outputs/$dir/$1/.infos/site"
+	cp -r sites/build.sh "outputs/$dir/$1/.infos/build.sh"
+	echo "$2" > outputs/$dir/$1/.infos/GLUON_RELEASE
+  echo "$3" > outputs/$dir/$1/.infos/GLUON_VERSION
 	echo "----- FINISHED building "$1" firmware for "$dir". Log in "$BASHLOGPATH" -----"
 
 	) 2>&1 | tee -a $BASHLOGPATH
