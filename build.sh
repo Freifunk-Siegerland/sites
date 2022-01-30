@@ -1,26 +1,25 @@
 #!/bin/bash
 
+### SETTINGS ###
 # Warn of uninitialized variables
 set -u
 #exit on error
 set -e
-
-#allready in site.mk
-#export GLUON_ATH10K_MESH=ibss
-
 #CPU cores
 NUM_CORES_PLUS_ONE=$(expr $(nproc) + 1)
 
+#check if arguments empty
 if [ $# -eq 0 ]; then
-	echo "Please run this script with the following command:"
+	echo "Please run this script with the following arguments:"
   echo "./build.sh <1> <2> <3> <4> <n>"
   echo "1: GLUON_BRANCH for manifest: s=stable, b=beta, e=experimental"
   echo "2: GLUON_RELEASE: in format XX.XX(.??)"
   echo "3: GLUON_VERSION to build from: in format 'v20XX.?X.?X', example v2017.1.8"
-	echo "4-n: site XXXX, example 'sihb'"
+	echo "4-n: Site XXXX to build for. Example 'sihb'"
 	exit 1;
 fi
 
+#GLUON_BRANCH format check
 case "${1}" in
 	"")	echo "!!!!! No GLUON_BRANCH option was specified. !!!!!"; 	exit 1 ;;
 	s)	echo "----- GLUON_BRANCH = stable -----"; 				export GLUON_BRANCH=stable ;;
@@ -62,9 +61,9 @@ done
 #jump to upper folder from the build.sh
 cd ../"$(dirname "$0")"
 
-#check for Secretkey
-if [[ -f lekey ]]; then
-	echo "----- Signingkey file exists at ../lekey -----"
+#check for Secretkey exist and not empty
+if [[ -s lekey ]]; then
+	echo "----- Signingkey file exists at ../lekey and not empty -----"
         read LESECRETKEY < lekey
 
 else
@@ -74,7 +73,7 @@ else
                 echo "----- will not sign Manifest -----"
         else
                 while true; do
-                        read -p "Do you wish to save this Key in a file for later [y/n]? " -n 1 -r
+                        read -p "????? Do you wish to save this Key in a file for later [y/n]? " -n 1 -r
                         echo    # (optional) move to a new line
                         if [[ $REPLY =~ ^[Yy]$ ]]; then
                                 echo "$LESECRETKEY" > lekey
@@ -90,29 +89,55 @@ else
         fi
 fi
 
+#check/create gluon
+if [ -s gluon/GLUON_VERSION ]; then
+	if [ "$3" != "$(cat gluon/GLUON_VERSION)" ]; then
+		while true; do
+			echo "????? GLUON_VERSION does not match the allready cloned one"
+			read -p "Delete and clone "$3" [y/n]? " -n 1 -r
+			echo    # (optional) move to a new line
+			if [[ $REPLY =~ ^[Yy]$ ]]; then
+				rm -rf gluon
+				echo "gluon folder deleted"
+				echo "----- clone git "$3" -----"
+				git clone -c advice.detachedHead=false https://github.com/freifunk-gluon/gluon.git gluon -b $3
+				echo "$3" > gluon/GLUON_VERSION
+				break
+			else
+				echo "gluon folder not deleted"
+				exit 0;
+			fi
+		done
+	else
+		echo "----- GLUON_VERSION "$3" allready cloned -----"
+	fi
+else
+	echo "----- clone git "$3" -----"
+	git clone -c advice.detachedHead=false https://github.com/freifunk-gluon/gluon.git gluon -b $3
+	echo "$3" > gluon/GLUON_VERSION
+fi
+
+
 for dir in "${@:4}"
 do
+	#clean gluon folders
+	[[ -f gluon/site/site.conf ]] && rm -rf gluon/site/*
+	[[ -d gluon/output/images ]] && rm -rf gluon/output/*
+
+	#check and create folders
+	[[ ! -d gluon/site ]] && mkdir -p gluon/site
+	[[ ! -d outputs/$dir/$GLUON_BRANCH ]] && mkdir -p outputs/$dir/$GLUON_BRANCH
+
 	#start log
 	BASHLOGPATH=outputs/$dir/$GLUON_BRANCH/.build.sh.log
 	echo "----- START log to "$BASHLOGPATH" -----"
 	(
 
-	#clean gluon folders
-	[[ -f gluon/site/site.conf ]] && rm -r gluon/site/*
-	[[ -d gluon/output/images ]] && rm -r gluon/output/*
-
-	#check and create folders
-	[[ ! -d gluon/site ]] && mkdir -p gluon/site
-  [[ ! -d outputs/$dir/$GLUON_BRANCH ]] && mkdir -p outputs/$dir/$GLUON_BRANCH
-
-
-	git clone https://github.com/freifunk-gluon/gluon.git gluon -b $3
-	#copy site
+	echo "----- copy site "$dir" -----"
 	rsync -av sites/$dir/ gluon/site
 
 	cd gluon
-	echo "----- checkout "$3" -----"
-	git checkout $3
+
 	echo "----- make update -----"
 	make update
 	#echo "----- cleaning ar71xx-generic -----"
@@ -153,7 +178,7 @@ do
 		echo "----- NOT signing manifest -----"
 	fi
 
-    echo "----- copying images and info -----"
+  echo "----- copying images and info -----"
 
 	#mit  backup (nicht angepasst)
 	#if ! [ -d outputs/$dir ]; then
@@ -179,10 +204,10 @@ do
 	rsync -av sites/.htaccess  outputs/$dir/$GLUON_BRANCH/sysupgrade/
 	rsync -av gluon/site/ outputs/$dir/$GLUON_BRANCH/.site
 	rsync -av sites/build.sh outputs/$dir/$GLUON_BRANCH/.build.sh
-        rsync -av sites/.git/HEAD  outputs/$dir/$GLUON_BRANCH/.sitesHEAD
-        rsync -av gluon/.git/HEAD  outputs/$dir/$GLUON_BRANCH/.gluonHEAD
+	echo "$LESECRETKEY" > outputs/$dir/$GLUON_BRANCH/.sites_branch
+  echo "$GLUON_VERSION" > outputs/$dir/$GLUON_BRANCH/.GLUON_VERSION
 
-	echo "----- FINISHED building "$GLUON_BRANCH" firmware for "$dir". Log in "$BASHLOGPATH " -----"
+	echo "----- FINISHED building "$GLUON_BRANCH" firmware for "$dir". Log in "$BASHLOGPATH" -----"
 
 	) 2>&1 | tee -a $BASHLOGPATH
 done
