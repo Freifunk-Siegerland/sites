@@ -166,7 +166,7 @@ do
   #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ipq40xx GLUON_BRANCH=$1 GLUON_RELEASE=$2
 
   echo "----- generating manifest -----"
-	make manifest
+	make manifest GLUON_BRANCH=$1
 
   #zu Bauen Pfad springen
   cd ..
