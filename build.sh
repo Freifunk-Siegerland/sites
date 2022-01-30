@@ -202,11 +202,11 @@ do
 	rsync -av gluon/output/images/factory outputs/$dir/$GLUON_BRANCH
 
 	#copy .htaccess for hideing the manifest from all
-	rsync -av sites/.htaccess  outputs/$dir/$GLUON_BRANCH/sysupgrade/
+	cp sites/.htaccess  outputs/$dir/$GLUON_BRANCH/sysupgrade/
 
 	#copy logs and infos
-	rsync -av gluon/site/ outputs/$dir/$GLUON_BRANCH/.site
-	rsync -av sites/build.sh outputs/$dir/$GLUON_BRANCH/.build.sh
+	cp -r gluon/site/ outputs/$dir/$GLUON_BRANCH/.site
+	cp -r sites/build.sh outputs/$dir/$GLUON_BRANCH/.build.sh
   echo "$GLUON_VERSION" > outputs/$dir/$GLUON_BRANCH/.GLUON_VERSION
 	echo "$GLUON_RELEASE" > outputs/$dir/$GLUON_BRANCH/.GLUON_RELEASE
 	echo "----- FINISHED building "$GLUON_BRANCH" firmware for "$dir". Log in "$BASHLOGPATH" -----"
