@@ -8,6 +8,7 @@ set -e
 #CPU cores
 NUM_CORES_PLUS_ONE=$(expr $(nproc) + 1)
 
+### INPUTCHECK ###
 #check if arguments empty
 if [ $# -eq 0 ]; then
 	echo "Please run this script with the following arguments:"
@@ -89,7 +90,7 @@ else
         fi
 fi
 
-#check/create gluon
+### check/create gluon ###
 if [ -s gluon/GLUON_VERSION ]; then
 	if [ "$3" != "$(cat gluon/GLUON_VERSION)" ]; then
 		while true; do
@@ -117,7 +118,7 @@ else
 	echo "$3" > gluon/GLUON_VERSION
 fi
 
-
+### BAUEN ###
 for dir in "${@:4}"
 do
 	#clean gluon folders
@@ -144,10 +145,10 @@ do
 	make clean GLUON_TARGET=ar71xx-generic
   echo "----- building ar71xx-generic for "$dir" -----"
   make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-generic
-  #echo "----- cleaning ar71xx-tiny -----"
-  #make clean GLUON_TARGET=ar71xx-tiny
-	#echo "----- building ar71xx-tiny for "$dir" -----"
-	#make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-tiny
+  echo "----- cleaning ar71xx-tiny -----"
+  make clean GLUON_TARGET=ar71xx-tiny
+	echo "----- building ar71xx-tiny for "$dir" -----"
+	make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-tiny
   #echo "----- cleaning ar71xx-nand -----"
   #make clean GLUON_TARGET=ar71xx-nand
   #echo "----- building ar71xx-nand for "$dir" -----"
