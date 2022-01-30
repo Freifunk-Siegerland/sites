@@ -140,10 +140,10 @@ do
 
 	echo "----- make update -----"
 	make update
-	#echo "----- cleaning ar71xx-generic -----"
-	#make clean GLUON_TARGET=ar71xx-generic
-  #echo "----- building ar71xx-generic for "$dir" -----"
-  #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-generic
+	echo "----- cleaning ar71xx-generic -----"
+	make clean GLUON_TARGET=ar71xx-generic
+  echo "----- building ar71xx-generic for "$dir" -----"
+  make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-generic
   #echo "----- cleaning ar71xx-tiny -----"
   #make clean GLUON_TARGET=ar71xx-tiny
 	#echo "----- building ar71xx-tiny for "$dir" -----"
@@ -200,13 +200,14 @@ do
 	rsync -av gluon/output/images/sysupgrade outputs/$dir/$GLUON_BRANCH
 	rsync -av gluon/output/images/factory outputs/$dir/$GLUON_BRANCH
 
-	#copy logs and infos
+	#copy .htaccess for hideing the manifest from all
 	rsync -av sites/.htaccess  outputs/$dir/$GLUON_BRANCH/sysupgrade/
+
+	#copy logs and infos
 	rsync -av gluon/site/ outputs/$dir/$GLUON_BRANCH/.site
 	rsync -av sites/build.sh outputs/$dir/$GLUON_BRANCH/.build.sh
-	echo "$LESECRETKEY" > outputs/$dir/$GLUON_BRANCH/.sites_branch
   echo "$GLUON_VERSION" > outputs/$dir/$GLUON_BRANCH/.GLUON_VERSION
-
+	echo "$GLUON_RELEASE" > outputs/$dir/$GLUON_BRANCH/.GLUON_RELEASE
 	echo "----- FINISHED building "$GLUON_BRANCH" firmware for "$dir". Log in "$BASHLOGPATH" -----"
 
 	) 2>&1 | tee -a $BASHLOGPATH
