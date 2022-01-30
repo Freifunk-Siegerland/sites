@@ -166,14 +166,14 @@ do
   #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ipq40xx GLUON_BRANCH=$1 GLUON_RELEASE=$2
 
   echo "----- generating manifest -----"
-#	make manifest
+	make manifest
 
   #zu Bauen Pfad springen
   cd ..
 
 	if ! [ "$LESECRETKEY" = "" ]; then
   	echo "----- signing manifest -----"
-#		gluon/contrib/sign.sh lekey gluon/output/images/sysupgrade/$1.manifest
+		gluon/contrib/sign.sh lekey gluon/output/images/sysupgrade/$1.manifest
 	else
 		echo "----- NOT signing manifest -----"
 	fi
