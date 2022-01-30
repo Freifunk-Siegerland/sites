@@ -133,11 +133,11 @@ do
 	cd gluon
 
 	echo "----- make update -----"
-	make update
+#	make update
 	echo "----- cleaning ar71xx-generic -----"
-	make clean GLUON_TARGET=ar71xx-generic
+#	make clean GLUON_TARGET=ar71xx-generic
   echo "----- building ar71xx-generic for "$site" -----"
-  make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-generic GLUON_BRANCH=$GLUON_BRANCH GLUON_RELEASE=$2
+#  make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-generic GLUON_BRANCH=$GLUON_BRANCH GLUON_RELEASE=$2
   echo "----- cleaning ar71xx-tiny -----"
   #make clean GLUON_TARGET=ar71xx-tiny
 	echo "----- building ar71xx-tiny for "$site" -----"
@@ -160,14 +160,14 @@ do
   #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ipq40xx GLUON_BRANCH=$GLUON_BRANCH GLUON_RELEASE=$2
 
   echo "----- generating manifest -----"
-	make manifest GLUON_BRANCH=$GLUON_BRANCH
+#	make manifest GLUON_BRANCH=$GLUON_BRANCH
 
   #zu Bauen Pfad springen
   cd ..
 
 	if ! [ "$LESECRETKEY" = "" ]; then
   	echo "----- signing manifest -----"
-		gluon/contrib/sign.sh $LESECRETKEY gluon/output/images/sysupgrade/$GLUON_BRANCH.manifest
+		gluon/contrib/sign.sh lekey gluon/output/images/sysupgrade/$GLUON_BRANCH.manifest
 	else
 		echo "----- NOT signing manifest -----"
 	fi
