@@ -62,27 +62,36 @@ done
 cd ../"$(dirname "$0")"
 
 #check for Secretkey exist and not empty
-if [[ -s lekey ]]; then
-	echo "----- Signingkey file exists at ../lekey and not empty -----"
-        read LESECRETKEY < lekey
+if [[ -f lekey ]]; then
+	if [[ -s lekey ]]; then
+		echo "----- Manifest will be signed with key ../lekey -----"
+    read LESECRETKEY < lekey
+	else
+		echo "----- Found empty keyfile at ../lekey, will not sign manifest -----"
+		LESECRETKEY = ""
+	fi
 else
-       echo "----- Pleas type in ur manifest signingkey or leave blank no signing -----"
+       echo "----- Pleas type in ur manifest signingkey or leave blank for no manifest signing -----"
+			 echo "----- The key/blank will be saved in '../lekey' -----"
        read -p 'Secretkey: ' LESECRETKEY
-        if [ "$LESECRETKEY" = "" ]; then
+      	if [ "$LESECRETKEY" = "" ]; then
                 echo "----- will not sign Manifest -----"
+								touch ../lekey
         else
-                while true; do
-                        read -p "????? Do you wish to save this Key in a file for later [y/n]? " -n 1 -r
-                        echo    # (optional) move to a new line
-                        if [[ $REPLY =~ ^[Yy]$ ]]; then
-                                echo "$LESECRETKEY" > lekey
-                                echo "Key saved in file '../lekey'"
-                                break
-                        else
-                                echo "Key not saved in file"
-                                break
-                        fi
-                done
+					echo "----- writeing key in '../lekey' -----"
+					echo "$LESECRETKEY" > lekey
+          #      while true; do
+          #              read -p "????? Do you wish to save this Key in a file for later [y/n]? " -n 1 -r
+          #              echo    # (optional) move to a new line
+          #              if [[ $REPLY =~ ^[Yy]$ ]]; then
+          #                      echo "$LESECRETKEY" > lekey
+          #                      echo "Key saved in file '../lekey'"
+          #                      break
+          #              else
+          #                      echo "Key not saved in file"
+          #                      break
+          #              fi
+          #      done
 
 
         fi
