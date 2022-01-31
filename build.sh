@@ -23,16 +23,16 @@ fi
 #GLUON_BRANCH format check
 case "${1}" in
 	"")						echo "!!!!! No GLUON_BRANCH option was specified. !!!!!"; 	exit 1 ;;
-	stable)				echo "----- GLUON_BRANCH = stable -----"; GLUON_BRANCH=$1 ;;
-	beta)					echo "----- GLUON_BRANCH = beta -----"; GLUON_BRANCH=$1  ;;
-	experimental)	echo "----- GLUON_BRANCH = experimental -----"; GLUON_BRANCH=$1 ;;
-#	a)						echo "----- GLUON_BRANCH = stable & beta & experimental -----" ;;
+	stable)				echo "----- GLUON_BRANCH = stable -----"; export GLUON_BRANCH=$1 ;;
+	beta)					echo "----- GLUON_BRANCH = beta -----"; export GLUON_BRANCH=$1  ;;
+	experimental)	echo "----- GLUON_BRANCH = experimental -----"; export GLUON_BRANCH=$1 ;;
 	*)						echo "!!!!! Unknown GLUON_BRANCH !!!!!"; 					exit 1 ;;
 esac
 
 #GLUON_RELEASE format check
 if [[ $2 == [0-9][0-9].[0-9][0-9].+([0-9]) ]] || [[ $2 == [0-9][0-9].[0-9][0-9] ]]; then
   echo "----- GLUON_RELEASE "$2" -----"
+	export GLUON_RELEASE=$2
 else
   echo "!!!!! GLUON_RELEASE not format XX.XX(.??) !!!!!"
   exit 1;
@@ -128,44 +128,44 @@ do
 	[[ ! -d outputs/$site/$GLUON_BRANCH ]] && mkdir -p outputs/$site/$GLUON_BRANCH
 
 	echo "----- copy site "$site" -----"
-	cp -r sites/$site/* gluon/site
+	rsync -av sites/$site/* gluon/site
 
 	cd gluon
 
 	echo "----- make update -----"
-#	make update
+	make update
 	echo "----- cleaning ar71xx-generic -----"
-#	make clean GLUON_TARGET=ar71xx-generic
+	make clean GLUON_TARGET=ar71xx-generic
   echo "----- building ar71xx-generic for "$site" -----"
-#  make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-generic GLUON_BRANCH=$GLUON_BRANCH GLUON_RELEASE=$2
+  make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-generic
   echo "----- cleaning ar71xx-tiny -----"
-  #make clean GLUON_TARGET=ar71xx-tiny
+  make clean GLUON_TARGET=ar71xx-tiny
 	echo "----- building ar71xx-tiny for "$site" -----"
-	#make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-tiny GLUON_BRANCH=$GLUON_BRANCH GLUON_RELEASE=$2
+	make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-tiny
   #echo "----- cleaning ar71xx-nand -----"
   #make clean GLUON_TARGET=ar71xx-nand
   #echo "----- building ar71xx-nand for "$site" -----"
-  #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-nand GLUON_BRANCH=$GLUON_BRANCH GLUON_RELEASE=$2
+  #make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-nand
   #echo "----- cleaning ramips-mt7621 -----"
   #make clean GLUON_TARGET=ramips-mt7621
   #echo "----- building ramips-mt7621 for "$site" -----"
-  #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ramips-mt7621 GLUON_BRANCH=$GLUON_BRANCH GLUON_RELEASE=$2
+  #make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=ramips-mt7621
   #echo "----- cleaning mpc85xx-generic -----"
   #make clean GLUON_TARGET=mpc85xx-generic
   #echo "----- building mpc85xx-generic for "$site" -----"1
-  #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=mpc85xx-generic GLUON_BRANCH=$GLUON_BRANCH GLUON_RELEASE=$2
+  #make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=mpc85xx-generic
   #echo "----- cleaning ipq40xx -----"
   #make clean GLUON_TARGET=ipq40xx
   #echo "----- building ipq40xx for "$site" -----"
-  #make -j$NUM_CORES_PLUS_ONE GLUON_TARGET=ipq40xx GLUON_BRANCH=$GLUON_BRANCH GLUON_RELEASE=$2
+  #make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=ipq40xx
 
   echo "----- generating manifest -----"
-#	make manifest GLUON_BRANCH=$GLUON_BRANCH
+	make manifest
 
   #zu Bauen Pfad springen
   cd ..
 
-	if ! [ "$LESECRETKEY" = "" ]; then
+	if ! [ $LESECRETKEY = "" ]; then
   	echo "----- signing manifest -----"
 		gluon/contrib/sign.sh lekey gluon/output/images/sysupgrade/$GLUON_BRANCH.manifest
 	else
@@ -195,13 +195,14 @@ do
 	rsync -av gluon/output/images/factory outputs/$site/$GLUON_BRANCH
 
 	#copy .htaccess for hideing the manifest from all
-	cp -r sites/.htaccess  outputs/$site/$GLUON_BRANCH/sysupgrade/
+	rsync -av sites/.htaccess  outputs/$site/$GLUON_BRANCH/sysupgrade/
 
 	#copy logs and infos
-	cp -r gluon/site/* outputs/$site/$GLUON_BRANCH/.infos/site
-	cp -r sites/build.sh outputs/$site/$GLUON_BRANCH/.infos/build.sh
-	echo '$2' > outputs/$site/$GLUON_BRANCH/.infos/GLUON_RELEASE
-  echo '$3' > outputs/$site/$GLUON_BRANCH/.infos/GLUON_VERSION
-	echo "----- FINISHED building "$GLUON_BRANCH" firmware for "$site". Log in "$BASHLOGPATH" -----"
+	[[ ! -d outputs/$site/$GLUON_BRANCH/.infos ]] && mkdir -p outputs/$site/$GLUON_BRANCH/.infos
+	rsync -av gluon/site/* outputs/$site/$GLUON_BRANCH/.infos/site/
+	rsync -av sites/build.sh outputs/$site/$GLUON_BRANCH/.infos/build.sh
+	echo "$GLUON_RELEASE" > outputs/$site/$GLUON_BRANCH/.infos/GLUON_RELEASE
+  echo "$3" > outputs/$site/$GLUON_BRANCH/.infos/GLUON_VERSION
+	echo "----- FINISHED building "$GLUON_BRANCH" firmware for "$site" -----"
 
 done
