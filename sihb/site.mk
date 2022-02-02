@@ -43,6 +43,6 @@ GLUON_PRIORITY ?= 0
 GLUON_REGION ?= eu
 
 # Languages to include
-GLUON_LANGS ?= en de
+GLUON_LANGS ?= de
 
 GLUON_ATH10K_MESH ?= ibss
