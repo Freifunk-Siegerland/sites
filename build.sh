@@ -145,43 +145,43 @@ do
 	make update
 	echo "----- cleaning ar71xx-generic -----"
 	make clean GLUON_TARGET=ar71xx-generic
-	echo "----- building ar71xx-generic for "$site" -----"
+	echo "----- building "$GLUON_BRANCH" ar71xx-generic for "$site" -----"
 	make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-generic
 	echo "----- cleaning ar71xx-tiny -----"
 	make clean GLUON_TARGET=ar71xx-tiny
-	echo "----- building ar71xx-tiny for "$site" -----"
+	echo "----- building "$GLUON_BRANCH" ar71xx-tiny for "$site" -----"
 	make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-tiny
 	#echo "----- cleaning ar71xx-nand -----"
 	#make clean GLUON_TARGET=ar71xx-nand
-	#echo "----- building ar71xx-nand for "$site" -----"
+	#echo "----- building "$GLUON_BRANCH" ar71xx-nand for "$site" -----"
 	#make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-nand
-	#echo "----- cleaning ramips-mt7621 -----"
+	#echo "----- cleaning "$GLUON_BRANCH" ramips-mt7621 -----"
 	#make clean GLUON_TARGET=ramips-mt7621
-	#echo "----- building ramips-mt7621 for "$site" -----"
+	#echo "----- building "$GLUON_BRANCH" ramips-mt7621 for "$site" -----"
 	#make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=ramips-mt7621
 	#echo "----- cleaning mpc85xx-generic -----"
 	#make clean GLUON_TARGET=mpc85xx-generic
-	#echo "----- building mpc85xx-generic for "$site" -----"1
+	#echo "----- building "$GLUON_BRANCH" mpc85xx-generic for "$site" -----"1
 	#make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=mpc85xx-generic
 	#echo "----- cleaning ipq40xx -----"
 	#make clean GLUON_TARGET=ipq40xx
-	#echo "----- building ipq40xx for "$site" -----"
+	#echo "----- building "$GLUON_BRANCH" ipq40xx for "$site" -----"
 	#make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=ipq40xx
 
-	echo "----- generating manifest -----"
+	echo "----- generating "$GLUON_BRANCH" manifest for "$site" -----"
 	make manifest
 
 	#zu Bauen Pfad springen
 	cd ..
 
 	if ! [[ $LESECRETKEY = "" ]]; then
-		echo "----- signing manifest -----"
+		echo "----- signing "$GLUON_BRANCH" manifest for "$site" -----"
 		gluon/contrib/sign.sh lekey gluon/output/images/sysupgrade/$GLUON_BRANCH.manifest
 	else
-		echo "----- NOT signing manifest -----"
+		echo "----- NOT signing "$GLUON_BRANCH" manifest for "$site" -----"
 	fi
 
-	echo "----- copying images and info -----"
+	echo "----- copying "$GLUON_BRANCH" images and info for "$site" -----"
 
 	#mit  backup (nicht angepasst)
 	#if ! [ -d outputs/$site ]; then
