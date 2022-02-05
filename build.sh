@@ -80,6 +80,7 @@ else
 	else
 		echo "----- writeing key in '../lekey' -----"
 		echo "$LESECRETKEY" > lekey
+		# glaub man muss zum signen ein file haben? umgeschrieben. reste:
 		#      while true; do
 		#              read -p "????? Do you wish to save this Key in a file for later [y/n]? " -n 1 -r
 		#              echo    # (optional) move to a new line
@@ -181,8 +182,7 @@ do
 		echo "----- NOT signing "$GLUON_BRANCH" manifest for "$site" -----"
 	fi
 
-	echo "----- copying "$GLUON_BRANCH" images and info for "$site" -----"
-
+	#echo "----- copying "$GLUON_BRANCH" images and info for "$site" -----"
 	#mit  backup (nicht angepasst)
 	#if ! [ -d outputs/$site ]; then
 	#        mkdir -p outputs/$site
@@ -199,21 +199,24 @@ do
 	#cp -av gluon/output/images/sysupgrade/ outputs/$site/sysupgrade/
 	#cp -av gluon/output/images/factory/ outputs/$site/factory/
 
-	[[ ! -d outputs/$site/$GLUON_BRANCH ]] && mkdir -p outputs/$site/$GLUON_BRANCH
+	OUTPUTPATH=outputs/$site/$GLUON_BRANCH
+
+	[[ ! -d $OUTPUTPATH ]] && mkdir -p $OUTPUTPATH
 
 	#output kopieren ohne backup
-	rsync -av gluon/output/images/sysupgrade outputs/$site/$GLUON_BRANCH
-	rsync -av gluon/output/images/factory outputs/$site/$GLUON_BRANCH
+	echo "----- copying "$GLUON_BRANCH" images to ../"$OUTPUTPATH"/ -----"
+	rsync -av --remove-source-files gluon/output/images/ $OUTPUTPATH/
 
 	#copy .htaccess for hideing the manifest from all
-	cp -r sites/.htaccess  outputs/$site/$GLUON_BRANCH/sysupgrade/
+	echo "----- copying .htaccess to ../"$OUTPUTPATH"/sysupgrade/ -----"
+	cp -r sites/.htaccess  $OUTPUTPATH/sysupgrade/
 
 	#copy logs and infos
-	[[ ! -d outputs/$site/$GLUON_BRANCH/.infos ]] && mkdir -p outputs/$site/$GLUON_BRANCH/.infos
-	cp -r gluon/site outputs/$site/$GLUON_BRANCH/.infos/
-	cp -r sites/build.sh outputs/$site/$GLUON_BRANCH/.infos/
-	echo "$GLUON_RELEASE" > outputs/$site/$GLUON_BRANCH/.infos/GLUON_RELEASE
-	echo "$3" > outputs/$site/$GLUON_BRANCH/.infos/GLUON_VERSION
+	[[ ! -d $OUTPUTPATH/.infos ]] && mkdir -p $OUTPUTPATH/.infos
+	cp -r gluon/site $OUTPUTPATH/.infos/
+	cp -r sites/build.sh $OUTPUTPATH/.infos/
+	echo "$GLUON_RELEASE" > $OUTPUTPATH/.infos/GLUON_RELEASE
+	echo "$3" > $OUTPUTPATH/.infos/GLUON_VERSION
 	echo "----- FINISHED building "$GLUON_BRANCH" firmware for "$site" -----"
 
 done
