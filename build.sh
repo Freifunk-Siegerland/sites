@@ -73,7 +73,7 @@ if [[ -f lekey ]]; then
 else
 	echo "----- Pleas type in ur manifest signingkey or leave empty for no manifest signing -----"
 	echo "----- The key/blank will be saved in '../lekey' -----"
-	read -p 'Secretkey: ' LESECRETKEY
+	read -s -p 'Secretkey: ' LESECRETKEY
 	if [[ $LESECRETKEY = "" ]]; then
 		echo "----- will not sign Manifest -----"
 		touch ../lekey
