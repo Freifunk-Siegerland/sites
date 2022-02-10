@@ -48,12 +48,12 @@ fi
 
 
 #check sites exist
-for site in "${@:4}"
+for SITE in "${@:4}"
 do
-	if [[ -d $site ]]; then
-		echo "----- will build for "$site" -----"
+	if [[ -d $SITE ]]; then
+		echo "----- will build for "$SITE" -----"
 	else
-		echo "!!!!! $site site not found !!!!!"
+		echo "!!!!! $SITE site not found !!!!!"
 		exit 1;
 	fi
 done
@@ -127,8 +127,8 @@ else
 	echo "$3" > gluon/GLUON_VERSION
 fi
 
-### BAUEN ###
-for site in "${@:4}"
+### BUILDING ###
+for SITE in "${@:4}"
 do
 	#clean gluon folders
 	[[ -f gluon/site/site.conf ]] && rm -rf gluon/site/*
@@ -137,69 +137,71 @@ do
 	#check and create folders
 	[[ ! -d gluon/site ]] && mkdir -p gluon/site
 
-	echo "----- copy site "$site" -----"
-	cp -r sites/$site/* gluon/site/
+	echo "----- copy site "$SITE" -----"
+	cp -r sites/$SITE/* gluon/site/
 
 	cd gluon
 
 	echo "----- make update -----"
 	make update
-	echo "----- cleaning ar71xx-generic -----"
-	make clean GLUON_TARGET=ar71xx-generic
-	echo "----- building "$GLUON_BRANCH" ar71xx-generic for "$site" -----"
-	make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-generic
-	echo "----- cleaning ar71xx-tiny -----"
-	make clean GLUON_TARGET=ar71xx-tiny
-	echo "----- building "$GLUON_BRANCH" ar71xx-tiny for "$site" -----"
-	make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-tiny
-	#echo "----- cleaning ar71xx-nand -----"
-	#make clean GLUON_TARGET=ar71xx-nand
-	#echo "----- building "$GLUON_BRANCH" ar71xx-nand for "$site" -----"
-	#make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=ar71xx-nand
-	#echo "----- cleaning "$GLUON_BRANCH" ramips-mt7621 -----"
-	#make clean GLUON_TARGET=ramips-mt7621
-	#echo "----- building "$GLUON_BRANCH" ramips-mt7621 for "$site" -----"
-	#make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=ramips-mt7621
-	#echo "----- cleaning mpc85xx-generic -----"
-	#make clean GLUON_TARGET=mpc85xx-generic
-	#echo "----- building "$GLUON_BRANCH" mpc85xx-generic for "$site" -----"1
-	#make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=mpc85xx-generic
-	#echo "----- cleaning ipq40xx -----"
-	#make clean GLUON_TARGET=ipq40xx
-	#echo "----- building "$GLUON_BRANCH" ipq40xx for "$site" -----"
-	#make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=ipq40xx
 
-	echo "----- generating "$GLUON_BRANCH" manifest for "$site" -----"
+	BUILDARRAY=(\
+	"ar71xx-generic" \
+	"ar71xx-tiny" \
+	"ar71xx-nand" \
+	"ath79-generic" \
+	"ath79-nand" \
+	"ipq40xx" \
+	"ipq806x" \
+	"lantiq-xrx200" \
+	"lantiq-xway" \
+	"mpc85xx-generic" \
+	"mpc85xx-p1020" \
+	"ramips-mt7620" \
+	"ramips-mt7621" \
+	"ramips-mt76x8" \
+	"ramips-rt305x")
+
+	for NOWBUILDING in "${BUILDARRAY[@]}"
+	do
+		echo "$NOWBUILDING"
+		echo "----- cleaning $NOWBUILDING -----"
+		make clean GLUON_TARGET=$NOWBUILDING
+		echo "----- building $GLUON_BRANCH $NOWBUILDING for $SITE -----"
+		make -j $NUM_CORES_PLUS_ONE GLUON_TARGET=$NOWBUILDING
+	done
+
+	echo "----- generating "$GLUON_BRANCH" manifest for "$SITE" -----"
 	make manifest
 
-	#zu Bauen Pfad springen
+	#zu bauen Pfad springen
 	cd ..
 
 	if ! [[ $LESECRETKEY = "" ]]; then
-		echo "----- signing "$GLUON_BRANCH" manifest for "$site" -----"
+		echo "----- signing "$GLUON_BRANCH" manifest for "$SITE" -----"
 		gluon/contrib/sign.sh lekey gluon/output/images/sysupgrade/$GLUON_BRANCH.manifest
 	else
-		echo "----- NOT signing "$GLUON_BRANCH" manifest for "$site" -----"
+		echo "----- NOT signing "$GLUON_BRANCH" manifest for "$SITE" -----"
 	fi
 
-	#echo "----- copying "$GLUON_BRANCH" images and info for "$site" -----"
+	#echo "----- copying "$GLUON_BRANCH" images and info for "$SITE" -----"
 	#mit  backup (nicht angepasst)
-	#if ! [ -d outputs/$site ]; then
-	#        mkdir -p outputs/$site
+	#if ! [ -d outputs/$SITE ]; then
+	#        mkdir -p outputs/$SITE
 	#else
-	#        if [ -d outputs/$site/sysupgrade.old ]; then
-	#                rm -r outputs/$site/sysupgrade.old
+	#        if [ -d outputs/$SITE/sysupgrade.old ]; then
+	#                rm -r outputs/$SITE/sysupgrade.old
 	#        fi
-	#        if [ -d outputs/$site/factory.old ]; then
-	#                rm -r outputs/$site/factory.old
+	#        if [ -d outputs/$SITE/factory.old ]; then
+	#                rm -r outputs/$SITE/factory.old
 	#        fi
-	#        mv outputs/$site/sysupgrade outputs/$site/sysupgrade.old
-	#        mv outputs/$site/factory outputs/$site/factory.old
+	#        mv outputs/$SITE/sysupgrade outputs/$SITE/sysupgrade.old
+	#        mv outputs/$SITE/factory outputs/$SITE/factory.old
 	#fi
-	#cp -av gluon/output/images/sysupgrade/ outputs/$site/sysupgrade/
-	#cp -av gluon/output/images/factory/ outputs/$site/factory/
+	#cp -av gluon/output/images/sysupgrade/ outputs/$SITE/sysupgrade/
+	#cp -av gluon/output/images/factory/ outputs/$SITE/factory/
 
-	OUTPUTPATH=outputs/$site/$GLUON_BRANCH
+	OUTPUTPATH=outputs/$SITE/$GLUON_BRANCH
 
 	[[ ! -d $OUTPUTPATH ]] && mkdir -p $OUTPUTPATH
 
@@ -217,6 +219,6 @@ do
 	cp -r sites/build.sh $OUTPUTPATH/.infos/
 	echo "$GLUON_RELEASE" > $OUTPUTPATH/.infos/GLUON_RELEASE
 	echo "$3" > $OUTPUTPATH/.infos/GLUON_VERSION
-	echo "----- FINISHED building "$GLUON_BRANCH" firmware for "$site" -----"
+	echo "----- FINISHED building "$GLUON_BRANCH" firmware for "$SITE" -----"
 
 done
