@@ -149,18 +149,19 @@ do
 	"ar71xx-generic" \
 	"ar71xx-tiny" \
 	"ar71xx-nand" \
-	"ath79-generic" \
-	"ath79-nand" \
-	"ipq40xx" \
-	"ipq806x" \
-	"lantiq-xrx200" \
-	"lantiq-xway" \
+	#"ath79-generic" \
+	#"ath79-nand" \
+	#"ipq40xx-generic" \
+	#"ipq806x-generic" \
+	#"lantiq-xrx200" \
+	#"lantiq-xway" \
 	"mpc85xx-generic" \
 	"mpc85xx-p1020" \
-	"ramips-mt7620" \
-	"ramips-mt7621" \
-	"ramips-mt76x8" \
-	"ramips-rt305x")
+	#"ramips-mt7620" \
+	#"ramips-mt7621" \
+	#"ramips-mt76x8" \
+	#"ramips-rt305x" \
+	)
 
 	for NOWBUILDING in "${BUILDARRAY[@]}"
 	do
