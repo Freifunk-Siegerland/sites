@@ -17,7 +17,6 @@ rm -rf ../outputs/*<br />
 ./build.sh experimental 18.02.4 v2018.2.4 sihb sisi sifb<br />
 
 ## Beispiel  Ordnerstruktur
-~/bauen/sites/		#SiWi-sites git clon enthält die build.sh<br />
-~/bauen/gluon/		#gluon git clon (wird von build.sh erstellt)<br />
-~/bauen/outputs/	#output für Firmware Images & Logs<br />
-~/bauen/lekey		  #Keyfile für Manifest signing (kann von build.sh erstellt werden)<br />
+~/bauen/sites/        #SiWi-sites git clon enthält die build.sh<br />
+~/bauen/gluon/        #gluon git clon (wird von build.sh erstellt)<br />
+~/bauen/outputs/      #output für Firmware Images & Logs<br />
