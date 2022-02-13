@@ -1,6 +1,0 @@
-<Files *.manifest>
-order deny,allow
-deny from all
-#allow from <IP>
-</Files>
-
