@@ -12,7 +12,6 @@ GLUON_FEATURES := \
 	ebtables-limit-arp \
 	mesh-batman-adv-15 \
 	mesh-vpn-fastd \
-	radvd \
 	respondd \
 	status-page \
 	web-advanced \
@@ -24,7 +23,7 @@ GLUON_FEATURES := \
 #		selection that would be enabled by default or due to the
 #		chosen feature flags
 
-GLUON_SITE_PACKAGES := haveged iwinfo
+GLUON_SITE_PACKAGES := iwinfo
 
 ##  DEFAULT_GLUON_RELEASE
 #   version string to use for images
@@ -43,8 +42,8 @@ GLUON_PRIORITY ?= 0
 GLUON_REGION ?= eu
 
 # Languages to include
-GLUON_LANGS ?= de
+GLUON_LANGS ?= de en
 
-GLUON_WLAN_MESH ?= ibss
 GLUON_AUTOUPDATER_ENABLED ?= 1
 GLUON_AUTOUPDATER_BRANCH ?= stable
+GLUON_DEPRECATED ?= full
